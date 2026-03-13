@@ -28,7 +28,7 @@ export default function LoginPage() {
 
         {/* logo */}
         <div className="text-center mb-7">
-          <p className="font-display text-3xl font-semibold text-plum tracking-tight">drano</p>
+          <p className="font-display text-3xl font-semibold text-plum tracking-tight">✦ drano</p>
           <p className="font-display italic text-base text-lilac-600 mt-1">drain the debt. manifest the wealth.</p>
         </div>
 
