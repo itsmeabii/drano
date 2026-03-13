@@ -1,26 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;500;600;700&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --color-plum-50:  #F5F0FA;
+  --color-plum-100: #E8DBF3;
+  --color-plum-200: #D4B8E8;
+  --color-plum-300: #B88FD6;
+  --color-plum-400: #9B65C4;
+  --color-plum-500: #7D4AA8;
+  --color-plum-600: #674188;
+  --color-plum-700: #523470;
+  --color-plum-800: #3D2655;
+  --color-plum-900: #28193A;
+  --color-plum:     #674188;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-lilac-50:  #F9F5FD;
+  --color-lilac-100: #F0E5F9;
+  --color-lilac-200: #E2CAF3;
+  --color-lilac-300: #D4AFED;
+  --color-lilac-400: #C8A1E0;
+  --color-lilac-500: #B580D2;
+  --color-lilac-600: #9A5EC0;
+  --color-lilac-700: #7A45A0;
+  --color-lilac-800: #5A3078;
+  --color-lilac-900: #3A1E50;
+  --color-lilac:     #C8A1E0;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-blush-50:  #FCF7FA;
+  --color-blush-100: #F7EBF4;
+  --color-blush-200: #EED6E9;
+  --color-blush-300: #E2BFD9;
+  --color-blush-400: #D19DC5;
+  --color-blush-500: #BE7AAF;
+  --color-blush-600: #A85899;
+  --color-blush-700: #863F78;
+  --color-blush-800: #622D57;
+  --color-blush-900: #3E1C38;
+  --color-blush:     #E2BFD9;
+
+  --color-latte-50:  #FDFCFA;
+  --color-latte-100: #FAF6F0;
+  --color-latte-200: #F7EFE5;
+  --color-latte-300: #EFE0CE;
+  --color-latte-400: #E5CEB4;
+  --color-latte-500: #D9B894;
+  --color-latte-600: #C99E70;
+  --color-latte-700: #B07F49;
+  --color-latte-800: #8A6035;
+  --color-latte-900: #5C3F22;
+  --color-latte:     #F7EFE5;
+
+  --color-income:  #5a9a7a;
+  --color-expense: #a85c82;
+
+  --font-display: 'Playfair Display', serif;
+  --font-body:    'Nunito', sans-serif;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-latte);
+  font-family: var(--font-body);
+  color: var(--color-plum);
 }
