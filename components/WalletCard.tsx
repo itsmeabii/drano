@@ -22,7 +22,7 @@ interface Wallet {
 interface Props {
   wallet: Wallet
   onDelete: () => void
-  onEdit: () => void  
+  onEdit: () => void
 }
 
 export default function WalletCard({ wallet, onDelete, onEdit }: Props) {
@@ -37,38 +37,32 @@ export default function WalletCard({ wallet, onDelete, onEdit }: Props) {
   }
 
   const isCredit = wallet.type === 'credit'
-  const creditUsedPct = isCredit && wallet.credit_limit > 0
-    ? (wallet.credit_used / wallet.credit_limit) * 100
-    : 0
+  const creditUsedPct =
+    isCredit && wallet.credit_limit > 0 ? (wallet.credit_used / wallet.credit_limit) * 100 : 0
 
-  const barColor = creditUsedPct >= 90
-    ? '#a85c82'
-    : creditUsedPct >= 60
-      ? '#C99E70'
-      : '#5a9a7a'
+  const barColor = creditUsedPct >= 90 ? '#a85c82' : creditUsedPct >= 60 ? '#C99E70' : '#5a9a7a'
 
   return (
     <>
-      <div className="bg-white border border-blush rounded-[20px] p-5 flex flex-col gap-3 relative overflow-hidden">
-
+      <div className="border-blush relative flex flex-col gap-3 overflow-hidden rounded-[20px] border bg-white p-5">
         {/* top color accent */}
         <div
-          className="absolute top-0 left-0 right-0 h-1 rounded-t-[20px]"
+          className="absolute top-0 right-0 left-0 h-1 rounded-t-[20px]"
           style={{ background: wallet.color ?? '#674188' }}
         />
 
         {/* header */}
-        <div className="flex items-start justify-between mt-1">
+        <div className="mt-1 flex items-start justify-between">
           <div className="flex items-center gap-2.5">
             <div
-              className="w-10 h-10 rounded-[12px] flex items-center justify-center text-xl"
+              className="flex h-10 w-10 items-center justify-center rounded-xl text-xl"
               style={{ background: `${wallet.color}22` }}
             >
               {wallet.icon ?? '👛'}
             </div>
             <div>
-              <p className="text-sm font-semibold text-plum">{wallet.name}</p>
-              <p className="text-xs text-lilac capitalize">{wallet.type}</p>
+              <p className="text-plum text-sm font-semibold">{wallet.name}</p>
+              <p className="text-lilac text-xs capitalize">{wallet.type}</p>
             </div>
           </div>
 
@@ -78,7 +72,7 @@ export default function WalletCard({ wallet, onDelete, onEdit }: Props) {
               onClick={() => setShowEdit(true)}
               className="text-lilac hover:text-plum text-xs transition-colors"
             >
-              <Pencil className="w-3.5 h-3.5"/>
+              <Pencil className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => setShowConfirm(true)}
@@ -91,10 +85,8 @@ export default function WalletCard({ wallet, onDelete, onEdit }: Props) {
 
         {/* balance */}
         <div>
-          <p className="text-xs text-lilac mb-0.5">
-            {isCredit ? 'Amount Owed' : 'Balance'}
-          </p>
-          <p className="font-display text-2xl font-semibold text-plum">
+          <p className="text-lilac mb-0.5 text-xs">{isCredit ? 'Amount Owed' : 'Balance'}</p>
+          <p className="font-display text-plum text-2xl font-semibold">
             {formatCurrency(wallet.balance)}
           </p>
         </div>
@@ -102,17 +94,19 @@ export default function WalletCard({ wallet, onDelete, onEdit }: Props) {
         {/* credit usage bar */}
         {isCredit && wallet.credit_limit > 0 && (
           <div>
-            <div className="flex justify-between text-xs text-lilac mb-1">
+            <div className="text-lilac mb-1 flex justify-between text-xs">
               <span>Credit Used</span>
-              <span>{formatCurrency(wallet.credit_used)} / {formatCurrency(wallet.credit_limit)}</span>
+              <span>
+                {formatCurrency(wallet.credit_used)} / {formatCurrency(wallet.credit_limit)}
+              </span>
             </div>
-            <div className="h-2 bg-latte rounded-full overflow-hidden">
+            <div className="bg-latte h-2 overflow-hidden rounded-full">
               <div
                 className="h-full rounded-full transition-all"
                 style={{ width: `${Math.min(creditUsedPct, 100)}%`, background: barColor }}
               />
             </div>
-            <div className="flex justify-between text-xs mt-1">
+            <div className="mt-1 flex justify-between text-xs">
               {creditUsedPct > 100 ? (
                 <span className="text-expense font-semibold">
                   ⚠️ Over limit by {formatCurrency(wallet.credit_used - wallet.credit_limit)}
@@ -127,11 +121,10 @@ export default function WalletCard({ wallet, onDelete, onEdit }: Props) {
               )}
             </div>
             {wallet.interest_rate > 0 && (
-              <p className="text-xs text-lilac mt-1">{wallet.interest_rate}% p.a. interest</p>
+              <p className="text-lilac mt-1 text-xs">{wallet.interest_rate}% p.a. interest</p>
             )}
           </div>
         )}
-
       </div>
 
       {showEdit && (
@@ -139,9 +132,9 @@ export default function WalletCard({ wallet, onDelete, onEdit }: Props) {
           wallet={wallet}
           onClose={() => setShowEdit(false)}
           onSuccess={() => {
-          setShowEdit(false)
-          onEdit()  
-        }}
+            setShowEdit(false)
+            onEdit()
+          }}
         />
       )}
 

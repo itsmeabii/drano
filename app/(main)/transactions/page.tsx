@@ -31,7 +31,7 @@ export default function TransactionsPage() {
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null)
 
   const filtered = useMemo(() => {
-    return transactions.filter(tx => {
+    return transactions.filter((tx) => {
       if (filters.type !== 'all' && tx.type !== filters.type) return false
       if (filters.wallet !== 'all' && tx.wallet_id !== filters.wallet) return false
       if (filters.category !== 'all' && tx.category_id !== filters.category) return false
@@ -43,163 +43,157 @@ export default function TransactionsPage() {
 
   const grouped = useMemo(() => {
     const groups: Record<string, typeof filtered> = {}
-    filtered.forEach(tx => {
+    filtered.forEach((tx) => {
       if (!groups[tx.date]) groups[tx.date] = []
       groups[tx.date].push(tx)
     })
     return groups
   }, [filtered])
 
-  const totalIncome = filtered
-    .filter(t => t.type === 'income')
-    .reduce((s, t) => s + t.amount, 0)
+  const totalIncome = filtered.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0)
 
   const totalExpense = filtered
-    .filter(t => t.type === 'expense')
+    .filter((t) => t.type === 'expense')
     .reduce((s, t) => s + t.amount, 0)
 
   return (
     <div className="p-4 md:p-8">
-
       {/* header */}
-      <div className="flex items-start justify-between mb-8">
+      <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="font-display text-3xl font-semibold text-plum">Transactions ✦</h1>
-          <p className="text-lilac text-base mt-1">Track every peso in and out</p>
+          <h1 className="font-display text-plum text-3xl font-semibold">Transactions ✦</h1>
+          <p className="text-lilac mt-1 text-base">Track every peso in and out</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="bg-plum text-latte text-sm font-bold px-5 py-2.5 rounded-full hover:bg-plum-700 transition-colors"
+          className="bg-plum text-latte hover:bg-plum-700 rounded-full px-5 py-2.5 text-sm font-bold transition-colors"
         >
           + Add Transaction
         </button>
       </div>
 
       {/* summary cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-plum rounded-[18px] p-5 relative overflow-hidden">
-          <div className="absolute top-[-20px] right-[-20px] w-[80px] h-[80px] rounded-full bg-plum-500 opacity-20 pointer-events-none" />
-          <p className="text-lilac text-sm mb-1 relative z-10">Net Balance</p>
-          <p className="font-display text-2xl font-semibold text-latte relative z-10">
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="bg-plum relative overflow-hidden rounded-[18px] p-5">
+          <div className="bg-plum-500 pointer-events-none absolute -top-5 -right-5 h-20 w-20 rounded-full opacity-20" />
+          <p className="text-lilac relative z-10 mb-1 text-sm">Net Balance</p>
+          <p className="font-display text-latte relative z-10 text-2xl font-semibold">
             {formatCurrency(totalIncome - totalExpense)}
           </p>
         </div>
-        <div className="bg-white border border-blush rounded-[18px] p-5">
-          <p className="text-lilac text-sm mb-1">Total Income</p>
-          <p className="font-display text-2xl font-semibold text-income">
+        <div className="border-blush rounded-[18px] border bg-white p-5">
+          <p className="text-lilac mb-1 text-sm">Total Income</p>
+          <p className="font-display text-income text-2xl font-semibold">
             +{formatCurrency(totalIncome)}
           </p>
         </div>
-        <div className="bg-white border border-blush rounded-[18px] p-5">
-          <p className="text-lilac text-sm mb-1">Total Expenses</p>
-          <p className="font-display text-2xl font-semibold text-expense">
+        <div className="border-blush rounded-[18px] border bg-white p-5">
+          <p className="text-lilac mb-1 text-sm">Total Expenses</p>
+          <p className="font-display text-expense text-2xl font-semibold">
             -{formatCurrency(totalExpense)}
           </p>
         </div>
       </div>
 
       {/* filters + date range */}
-    <div className="bg-white border border-blush rounded-[18px] p-5 mb-6">
-    <div className="flex flex-wrap gap-4 items-end">
+      <div className="border-blush mb-6 rounded-[18px] border bg-white p-5">
+        <div className="flex flex-wrap items-end gap-4">
+          <div className="w-35">
+            <Dropdown
+              label="Type"
+              value={filters.type}
+              onChange={(v) => setFilters({ ...filters, type: v as FilterState['type'] })}
+              options={[{ value: 'all', label: 'All Types' }, ...WALLET_TYPE_OPTIONS]}
+            />
+          </div>
 
-        <div className="w-[140px]">
-        <Dropdown
-            label="Type"
-            value={filters.type}
-            onChange={(v) => setFilters({ ...filters, type: v as FilterState['type'] })}
-            options={[{ value: 'all', label: 'All Types' }, 
-                ...WALLET_TYPE_OPTIONS]}
-        />
+          <div className="w-45">
+            <Dropdown
+              label="Wallet"
+              value={filters.wallet}
+              onChange={(v) => setFilters({ ...filters, wallet: v })}
+              options={[
+                { value: 'all', label: 'All Wallets' },
+                ...wallets.map((w) => ({ value: w.id, label: `${w.name}` })),
+              ]}
+            />
+          </div>
+
+          <div className="w-45">
+            <Dropdown
+              label="Category"
+              value={filters.category}
+              onChange={(v) => setFilters({ ...filters, category: v })}
+              options={[
+                { value: 'all', label: 'All Categories' },
+                ...categories.map((c) => ({ value: c.id, label: `${c.name}` })),
+              ]}
+            />
+          </div>
+
+          <div className="min-w-65 flex-1">
+            <DateRangePicker
+              from={dateRange.from}
+              to={dateRange.to}
+              onFromChange={(v) => setDateRange({ ...dateRange, from: v })}
+              onToChange={(v) => setDateRange({ ...dateRange, to: v })}
+            />
+          </div>
         </div>
-
-        <div className="w-[180px]">
-        <Dropdown
-            label="Wallet"
-            value={filters.wallet}
-            onChange={(v) => setFilters({ ...filters, wallet: v })}
-            options={[
-            { value: 'all', label: 'All Wallets' },
-            ...wallets.map(w => ({ value: w.id, label: `${w.name}` })),
-            ]}
-        />
-        </div>
-
-        <div className="w-[180px]">
-        <Dropdown
-            label="Category"
-            value={filters.category}
-            onChange={(v) => setFilters({ ...filters, category: v })}
-            options={[
-            { value: 'all', label: 'All Categories' },
-            ...categories.map(c => ({ value: c.id, label: `${c.name}` })),
-            ]}
-        />
-        </div>
-
-        <div className="flex-1 min-w-[260px]">
-        <DateRangePicker
-            from={dateRange.from}
-            to={dateRange.to}
-            onFromChange={(v) => setDateRange({ ...dateRange, from: v })}
-            onToChange={(v) => setDateRange({ ...dateRange, to: v })}
-        />
-        </div>
-
-    </div>
-    </div>
+      </div>
 
       {/* transactions list */}
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center bg-white border border-blush rounded-[18px]">
-          <p className="text-4xl mb-3">💸</p>
+        <div className="border-blush flex flex-col items-center justify-center rounded-[18px] border bg-white py-16 text-center">
+          <p className="mb-3 text-4xl">💸</p>
           <p className="text-plum text-base font-semibold">No transactions found</p>
-          <p className="text-lilac text-sm mt-1">Try adjusting your filters or add a new transaction</p>
+          <p className="text-lilac mt-1 text-sm">
+            Try adjusting your filters or add a new transaction
+          </p>
         </div>
       ) : (
         <div className="flex flex-col gap-4">
           {Object.entries(grouped).map(([date, txs]) => (
             <div key={date}>
-
               {/* date header */}
-              <div className="flex items-center gap-3 mb-3">
-                <p className="font-display text-base font-semibold text-plum">
-                  {formatDate(date)}
-                </p>
-                <div className="flex-1 h-px bg-blush" />
-                <p className="text-sm text-lilac">
+              <div className="mb-3 flex items-center gap-3">
+                <p className="font-display text-plum text-base font-semibold">{formatDate(date)}</p>
+                <div className="bg-blush h-px flex-1" />
+                <p className="text-lilac text-sm">
                   {txs.length} transaction{txs.length !== 1 ? 's' : ''}
                 </p>
               </div>
 
               {/* transactions */}
-              <div className="bg-white border border-blush rounded-[18px] overflow-hidden">
+              <div className="border-blush overflow-hidden rounded-[18px] border bg-white">
                 {txs.map((tx, i) => (
                   <div
                     key={tx.id}
-                    className={`flex items-center gap-4 p-4 ${i !== txs.length - 1 ? 'border-b border-latte' : ''}`}
+                    className={`flex items-center gap-4 p-4 ${i !== txs.length - 1 ? 'border-latte border-b' : ''}`}
                   >
                     {/* icon */}
                     <div
-                      className="w-11 h-11 rounded-[12px] flex items-center justify-center text-xl flex-shrink-0"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl"
                       style={{ background: `${tx.wallets?.color ?? '#674188'}22` }}
                     >
-                      {tx.categories?.icon ?? (tx.type === 'income' ? '💰' : tx.type === 'transfer' ? '🔄' : '💸')}
+                      {tx.categories?.icon ??
+                        (tx.type === 'income' ? '💰' : tx.type === 'transfer' ? '🔄' : '💸')}
                     </div>
 
                     {/* details */}
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-plum truncate">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-plum truncate text-sm font-semibold">
                         {tx.name || tx.categories?.name || tx.type}
                       </p>
-                      <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                      <div className="mt-0.5 flex flex-wrap items-center gap-2">
                         {tx.categories && (
-                          <span className="text-xs text-lilac">{tx.categories.name}</span>
+                          <span className="text-lilac text-xs">{tx.categories.name}</span>
                         )}
                         {tx.categories && tx.wallets && (
-                          <span className="text-xs text-blush">·</span>
+                          <span className="text-blush text-xs">·</span>
                         )}
                         {tx.wallets && (
-                          <span className="text-xs text-lilac">
+                          <span className="text-lilac text-xs">
                             {tx.wallets.icon} {tx.wallets.name}
                           </span>
                         )}
@@ -207,31 +201,32 @@ export default function TransactionsPage() {
                     </div>
 
                     {/* amount */}
-                    <div className="text-right flex-shrink-0">
-                      <p className={`font-display text-base font-semibold ${
-                        tx.type === 'income'
-                          ? 'text-income'
-                          : tx.type === 'transfer'
-                            ? 'text-lilac'
-                            : 'text-expense'
-                      }`}>
-                        {tx.type === 'income' ? '+' : tx.type === 'transfer' ? '' : '-'}{formatCurrency(tx.amount)}
+                    <div className="shrink-0 text-right">
+                      <p
+                        className={`font-display text-base font-semibold ${
+                          tx.type === 'income'
+                            ? 'text-income'
+                            : tx.type === 'transfer'
+                              ? 'text-lilac'
+                              : 'text-expense'
+                        }`}
+                      >
+                        {tx.type === 'income' ? '+' : tx.type === 'transfer' ? '' : '-'}
+                        {formatCurrency(tx.amount)}
                       </p>
-                      <p className="text-xs text-lilac capitalize">{tx.type}</p>
+                      <p className="text-lilac text-xs capitalize">{tx.type}</p>
                     </div>
 
                     {/* delete */}
                     <button
                       onClick={() => setConfirmDelete(tx.id)}
-                      className="text-blush hover:text-expense text-sm transition-colors flex-shrink-0"
+                      className="text-blush hover:text-expense shrink-0 text-sm transition-colors"
                     >
                       ✕
                     </button>
-
                   </div>
                 ))}
               </div>
-
             </div>
           ))}
         </div>
@@ -251,12 +246,8 @@ export default function TransactionsPage() {
       )}
 
       {showModal && (
-        <AddTransactionModal
-            onClose={() => setShowModal(false)}
-            onSuccess={fetchTransactions}
-        />
-        )}
-
+        <AddTransactionModal onClose={() => setShowModal(false)} onSuccess={fetchTransactions} />
+      )}
     </div>
   )
 }
