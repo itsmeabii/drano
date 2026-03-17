@@ -14,7 +14,7 @@ import AddTransactionModal from '@/components/AddTransactionModal'
 import { FilterState } from '@/types/filter'
 
 export default function TransactionsPage() {
-  const { transactions, deleteTransaction, fetchTransactions } = useTransactions()
+  const { transactions, deleteTransaction, fetchTransactions, loading } = useTransactions()
   const { wallets } = useWallets()
   const { categories } = useCategories()
 
@@ -143,7 +143,13 @@ export default function TransactionsPage() {
       </div>
 
       {/* transactions list */}
-      {filtered.length === 0 ? (
+      {loading ? (
+        <div className="border-blush flex flex-col items-center justify-center rounded-[18px] border bg-white py-16 text-center">
+          <p className="mb-3 text-4xl">⏳</p>
+          <p className="text-plum text-base font-semibold">Loading transactions…</p>
+          <p className="text-lilac mt-1 text-sm">Fetching your latest activity</p>
+        </div>
+      ) : filtered.length === 0 ? (
         <div className="border-blush flex flex-col items-center justify-center rounded-[18px] border bg-white py-16 text-center">
           <p className="mb-3 text-4xl">💸</p>
           <p className="text-plum text-base font-semibold">No transactions found</p>

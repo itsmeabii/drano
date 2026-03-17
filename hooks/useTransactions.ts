@@ -1,7 +1,7 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
 export interface Transaction {
@@ -44,7 +44,7 @@ export function useTransactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
   const router = useRouter()
 
   const normalizeTransactions = (data: Transaction[]) =>
@@ -59,19 +59,28 @@ export function useTransactions() {
     let cancelled = false
 
     const loadTransactions = async () => {
-      const { data, error } = await supabase
-        .from('transactions')
-        .select(TRANSACTION_QUERY)
-        .order('date', { ascending: false })
-        .order('created_at', { ascending: false })
-
-      if (!cancelled && data) {
-        setTransactions(normalizeTransactions(data))
+      if (!cancelled) {
+        setLoading(true)
+        setError('')
       }
 
-      if (error) {
-        console.error('fetchTransactions error:', error)
-        if (!cancelled) setError(error.message)
+      try {
+        const { data, error } = await supabase
+          .from('transactions')
+          .select(TRANSACTION_QUERY)
+          .order('date', { ascending: false })
+          .order('created_at', { ascending: false })
+
+        if (!cancelled && data) {
+          setTransactions(normalizeTransactions(data))
+        }
+
+        if (error) {
+          console.error('fetchTransactions error:', error)
+          if (!cancelled) setError(error.message)
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
       }
     }
 
@@ -80,17 +89,24 @@ export function useTransactions() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [supabase])
 
   const fetchTransactions = async () => {
-    const { data, error } = await supabase
-      .from('transactions')
-      .select(TRANSACTION_QUERY)
-      .order('date', { ascending: false })
-      .order('created_at', { ascending: false })
+    setLoading(true)
+    setError('')
 
-    if (data) setTransactions(normalizeTransactions(data))
-    if (error) setError(error.message)
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select(TRANSACTION_QUERY)
+        .order('date', { ascending: false })
+        .order('created_at', { ascending: false })
+
+      if (data) setTransactions(normalizeTransactions(data))
+      if (error) setError(error.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   // ── Add a transaction ──

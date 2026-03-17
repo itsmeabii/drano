@@ -70,10 +70,11 @@ export function applyTransactionsToWallets<TWallet extends WalletMathWallet>(
   }
 
   return wallets.map((w) => {
-    const opening = n(w.balance)
-    const ledger = opening + (deltas.get(w.id) ?? 0)
-
     if (w.type === 'credit') {
+      // For credit wallets, treat the stored "balance" as starting amount owed.
+      // Internally we keep a cash-like ledger where debt is negative.
+      const opening = -Math.abs(n(w.balance))
+      const ledger = opening + (deltas.get(w.id) ?? 0)
       const owed = Math.max(0, -ledger)
       return {
         ...w,
@@ -86,6 +87,8 @@ export function applyTransactionsToWallets<TWallet extends WalletMathWallet>(
       }
     }
 
+    const opening = n(w.balance)
+    const ledger = opening + (deltas.get(w.id) ?? 0)
     return {
       ...w,
       opening_balance: opening,

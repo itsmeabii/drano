@@ -8,7 +8,7 @@ import { formatCurrency } from '@/utils/formatters'
 
 export default function WalletsPage() {
   const [showModal, setShowModal] = useState(false)
-  const { wallets, fetchWallets } = useWallets()
+  const { wallets, fetchWallets, loading } = useWallets()
 
   const totalBalance = wallets.reduce((sum, w) => sum + (w.balance ?? 0), 0)
   const totalCreditUsed = wallets
@@ -60,7 +60,13 @@ export default function WalletsPage() {
       </div>
 
       {/* wallets grid */}
-      {wallets.length === 0 ? (
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <p className="mb-3 text-4xl">⏳</p>
+          <p className="text-plum font-semibold">Loading wallets…</p>
+          <p className="text-lilac mt-1 text-sm">Fetching your latest balances</p>
+        </div>
+      ) : wallets.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <p className="mb-3 text-4xl">👛</p>
           <p className="text-plum font-semibold">No wallets yet</p>
