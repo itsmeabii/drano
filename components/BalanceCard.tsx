@@ -19,24 +19,23 @@ export default function BalanceCard({
   const [showTotal, setShowTotal] = useState(false)
 
   return (
-    <div className="bg-plum relative mb-4 overflow-hidden rounded-[20px] p-6">
-      <div className="bg-plum-500 pointer-events-none absolute -top-7.5 -right-7.5 h-30 w-30 rounded-full opacity-20" />
-      <div className="absolute-bottom-5 bg-lilac pointer-events-none right-15 h-20 w-20 rounded-full opacity-10" />
-
+    <div className="bg-plum relative mb-4 overflow-hidden rounded-[20px] px-6 py-4">
+      <div className="bg-plum-500 pointer-events-none absolute -right-10 bottom-0 h-40 w-40 rounded-full opacity-20" />
+      <div className="bg-lilac pointer-events-none absolute -top-1 -left-5 h-28 w-28 rounded-full opacity-10" />
       <div className="relative z-10">
         {/* spendable balance — always visible */}
-        <p className="text-lilac mb-1 text-sm">Spendable Balance</p>
+        <p className="text-lilac mb-1 text-base">Spendable Balance</p>
         <p className="font-display text-latte text-5xl font-semibold">
           {formatCurrency(spendableBalance)}
         </p>
-        <p className="text-blush mt-1 text-xs">cash + debit only · excludes savings</p>
+        <p className="text-blush mt-1 text-sm">cash + debit only · excludes savings</p>
 
-        <div className="bg-plum-700 my-4 h-px" />
+        <div className="bg-plum-700 my-3 h-px" />
 
         {/* savings — always visible */}
         <div className="mb-3 flex items-center justify-between">
           <div>
-            <p className="text-lilac text-sm">Savings</p>
+            <p className="text-lilac text-base">Savings</p>
             <p className="font-display text-latte text-2xl font-semibold">
               {formatCurrency(savingsBalance)}
             </p>
@@ -45,7 +44,7 @@ export default function BalanceCard({
           {/* total — hidden by default */}
           <div className="text-right">
             <div className="mb-1 flex items-center justify-end gap-2">
-              <p className="text-lilac text-sm">Total (all wallets)</p>
+              <p className="text-lilac text-base">Total (all wallets)</p>
               <button
                 onClick={() => setShowTotal(!showTotal)}
                 className="text-lilac hover:text-latte text-sm transition-colors"
@@ -59,7 +58,7 @@ export default function BalanceCard({
           </div>
         </div>
 
-        <p className="text-blush text-xs">
+        <p className="text-blush text-sm">
           ✦ {walletCount} wallet{walletCount !== 1 ? 's' : ''}
         </p>
       </div>

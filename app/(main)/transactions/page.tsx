@@ -16,7 +16,7 @@ import { FilterState } from '@/types/filter'
 export default function TransactionsPage() {
   const { transactions, deleteTransaction, fetchTransactions } = useTransactions()
   const { wallets } = useWallets()
-  const categories = useCategories()
+  const { categories } = useCategories()
 
   const [showModal, setShowModal] = useState(false)
   const [filters, setFilters] = useState<FilterState>({

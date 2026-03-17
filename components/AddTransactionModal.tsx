@@ -3,10 +3,12 @@
 import { useState } from 'react'
 import { useTransactions, TransactionForm } from '@/hooks/useTransactions'
 import { useWallets } from '@/hooks/useWallets'
-import { useCategories } from '@/hooks/useCategories'
 import Dropdown from '@/components/Dropdown'
 import DatePicker from '@/components/DatePicker'
 import { formatCurrency, parseAmount } from '@/utils/formatters'
+import { Plus } from 'lucide-react'
+import { Category, useCategories } from '@/hooks/useCategories'
+import { QuickAddCategory } from './QuickAddCategory'
 
 interface Props {
   onClose: () => void
@@ -29,9 +31,9 @@ export default function AddTransactionModal({ onClose, onSuccess }: Props) {
   const [form, setForm] = useState<TransactionForm>(defaultForm)
   const { addTransaction, loading, error } = useTransactions()
   const { wallets } = useWallets()
-  const categories = useCategories()
-
-  const filteredCategories = categories.filter((c) => c.type === form.type)
+  const { categories } = useCategories()
+  const [showAddCategory, setShowAddCategory] = useState(false)
+  const filteredCategories = categories.filter((c: Category) => c.type === form.type)
   const toWallets = wallets.filter((w) => w.id !== form.wallet_id)
 
   const walletOptions = wallets.map((w) => ({
@@ -190,10 +192,33 @@ export default function AddTransactionModal({ onClose, onSuccess }: Props) {
           {/* category — not for transfer */}
           {form.type !== 'transfer' && (
             <div>
-              <label className="text-plum mb-1.5 block text-sm font-semibold">Category</label>
-              {filteredCategories.length === 0 ? (
+              <div className="mb-1.5 flex items-center justify-between">
+                <label className="text-plum block text-sm font-semibold">Category</label>
+                <button
+                  type="button"
+                  onClick={() => setShowAddCategory(!showAddCategory)}
+                  className="text-lilac hover:text-plum flex items-center gap-1 text-xs transition-colors"
+                >
+                  <Plus size={12} /> New Category
+                </button>
+              </div>
+
+              {/* quick add category */}
+              {showAddCategory && (
+                <QuickAddCategory
+                  type={form.type as 'expense' | 'income'}
+                  onSuccess={(newCat) => {
+                    setForm({ ...form, category_id: newCat.id })
+                    setShowAddCategory(false)
+                  }}
+                  onCancel={() => setShowAddCategory(false)}
+                />
+              )}
+
+              {/* existing categories */}
+              {filteredCategories.length === 0 && !showAddCategory ? (
                 <div className="border-blush bg-latte text-lilac w-full rounded-xl border-[1.5px] px-4 py-3 text-sm">
-                  No categories yet — add some in Categories
+                  No categories yet — add one above
                 </div>
               ) : (
                 <div className="grid grid-cols-3 gap-2">
