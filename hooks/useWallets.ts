@@ -1,8 +1,9 @@
 'use client'
 
 import { createClient } from '@/lib/supabase/client'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { applyTransactionsToWallets } from '@/utils/walletMath'
 
 export interface Wallet {
   id: string
@@ -14,6 +15,8 @@ export interface Wallet {
   interest_rate: number
   icon: string
   color: string
+  opening_balance?: number
+  ledger_balance?: number
 }
 
 export interface WalletForm {
@@ -21,14 +24,14 @@ export interface WalletForm {
   type: 'cash' | 'debit' | 'credit' | 'savings'
   balance: number
   credit_limit: number
-  credit_used: number  
+  credit_used: number
   interest_rate: number
   icon: string
   color: string
 }
 
 const normalizeWallets = (data: Wallet[]): Wallet[] =>
-  data.map(w => ({
+  data.map((w) => ({
     ...w,
     balance: parseFloat(String(w.balance ?? 0)),
     credit_limit: parseFloat(String(w.credit_limit ?? 0)),
@@ -41,32 +44,70 @@ export function useWallets() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
-  const supabase = createClient()
+  const supabase = useMemo(() => createClient(), [])
+
+  type WalletTxRow = {
+    type: 'expense' | 'income' | 'transfer'
+    wallet_id: string
+    to_wallet_id: string | null
+    amount: number
+    transfer_fee: number | null
+    date: string
+  }
+
+  const fetchWalletsWithComputedBalances = useCallback(async () => {
+    const [{ data: walletsData, error: walletsError }, { data: txData, error: txError }] =
+      await Promise.all([
+        supabase.from('wallets').select('*').order('created_at', { ascending: true }),
+        supabase
+          .from('transactions')
+          .select('type, wallet_id, to_wallet_id, amount, transfer_fee, date')
+          .order('date', { ascending: false })
+          .order('created_at', { ascending: false }),
+      ])
+
+    if (walletsError) throw walletsError
+    if (txError) throw txError
+
+    const normalizedWallets = walletsData ? normalizeWallets(walletsData as Wallet[]) : []
+    const computed = applyTransactionsToWallets<Wallet>(
+      normalizedWallets,
+      (txData ?? []) as WalletTxRow[]
+    )
+
+    setWallets(computed)
+  }, [supabase])
 
   const fetchWallets = async () => {
-    const { data } = await supabase
-      .from('wallets')
-      .select('*')
-      .order('created_at', { ascending: true })
-    if (data) setWallets(normalizeWallets(data))
+    try {
+      await fetchWalletsWithComputedBalances()
+    } catch (e: unknown) {
+      console.error('fetchWallets error:', e)
+      if (e instanceof Error) setError(e.message)
+      else setError('Something went wrong')
+    }
   }
 
   useEffect(() => {
     const load = async () => {
-      const { data } = await supabase
-        .from('wallets')
-        .select('*')
-        .order('created_at', { ascending: true })
-      if (data) setWallets(normalizeWallets(data))
+      try {
+        await fetchWalletsWithComputedBalances()
+      } catch (e: unknown) {
+        console.error('fetchWallets error:', e)
+        if (e instanceof Error) setError(e.message)
+        else setError('Something went wrong')
+      }
     }
     load()
-  }, [])
+  }, [fetchWalletsWithComputedBalances])
 
   const addWallet = async (form: WalletForm) => {
     setLoading(true)
     setError('')
 
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
     if (!user) return false
 
     const { error } = await supabase.from('wallets').insert({
@@ -90,10 +131,7 @@ export function useWallets() {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase
-      .from('wallets')
-      .update(form)
-      .eq('id', id)
+    const { error } = await supabase.from('wallets').update(form).eq('id', id)
 
     if (error) {
       setError(error.message)
@@ -111,10 +149,7 @@ export function useWallets() {
     setLoading(true)
     setError('')
 
-    const { error } = await supabase
-      .from('wallets')
-      .delete()
-      .eq('id', id)
+    const { error } = await supabase.from('wallets').delete().eq('id', id)
 
     if (error) {
       setError(error.message)

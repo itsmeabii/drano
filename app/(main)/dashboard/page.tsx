@@ -1,5 +1,6 @@
-import { getUser } from '@/utils/user'
-import { getDashboardData } from '@/utils/dashboard'
+'use client'
+
+import { useDashboard } from '@/hooks/useDashboard'
 import { formatCurrency, formatDate } from '@/utils/formatters'
 import AddTransactionButton from '@/components/AddTransactionButton'
 import AddWalletButton from '@/components/AddWalletButton'
@@ -7,10 +8,8 @@ import AddGoalButton from '@/components/AddGoalButton'
 import BalanceCard from '@/components/BalanceCard'
 import Link from 'next/link'
 
-export default async function DashboardPage() {
-  const [user, data] = await Promise.all([getUser(), getDashboardData()])
-
-  const displayName = user?.profile?.first_name ?? user?.profile?.username ?? 'there'
+export default function DashboardPage() {
+  const data = useDashboard()
 
   return (
     <div className="p-4 md:p-8">
@@ -18,7 +17,7 @@ export default async function DashboardPage() {
       <div className="mb-8 flex items-start justify-between">
         <div>
           <h1 className="font-display text-plum text-3xl font-semibold">
-            Good morning, <em className="text-lilac italic">{displayName}</em> ✦
+            Good morning, <em className="text-lilac italic">{data.displayName}</em> ✦
           </h1>
           <p className="text-lilac mt-1 text-base">
             {new Date().toLocaleDateString('en-US', {
@@ -40,6 +39,12 @@ export default async function DashboardPage() {
         savingsBalance={data.savingsBalance}
         walletCount={data.wallets.length}
       />
+
+      {data.error && (
+        <div className="border-blush text-expense mb-6 rounded-[12px] border bg-[#fdf0f5] px-4 py-3 text-sm">
+          {data.error}
+        </div>
+      )}
 
       {/* income + expense */}
       <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
