@@ -29,10 +29,10 @@ export default function SideBar({ profile }: SideBarProps) {
     : '✦'
 
   return (
-    <aside className="bg-plum relative flex min-h-screen w-[220px] flex-shrink-0 flex-col overflow-hidden">
+    <aside className="bg-plum relative flex min-h-screen w-55 shrink-0 flex-col overflow-hidden">
       {/* decorative blobs */}
-      <div className="bg-plum-500 pointer-events-none absolute top-[-60px] right-[-60px] h-[160px] w-[160px] rounded-full opacity-40" />
-      <div className="bg-plum-800 pointer-events-none absolute bottom-[80px] left-[-40px] h-[120px] w-[120px] rounded-full opacity-30" />
+      <div className="bg-plum-500 pointer-events-none absolute -top-15 -right-15 h-40 w-40 rounded-full opacity-40" />
+      <div className="bg-plum-800 pointer-events-none absolute bottom-20 -left-10 h-30 w-30 rounded-full opacity-30" />
 
       {/* logo */}
       <div className="border-plum-700 relative z-10 border-b px-5 pt-7 pb-5">
@@ -73,7 +73,7 @@ export default function SideBar({ profile }: SideBarProps) {
       {/* user + logout */}
       <div className="border-plum-700 relative z-10 border-t px-3 pt-4 pb-5">
         <div className="bg-plum-700 mb-2 flex items-center gap-2.5 rounded-xl px-3 py-2.5">
-          <div className="bg-lilac text-plum flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold">
+          <div className="bg-lilac text-plum flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold">
             {initials}
           </div>
           <div>

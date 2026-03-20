@@ -33,6 +33,13 @@ export interface TransactionForm {
   date: string
 }
 
+const TRANSACTION_QUERY = `
+  *,
+  wallets!transactions_wallet_id_fkey(id, name, icon, color),
+  to_wallet:wallets!transactions_to_wallet_id_fkey(id, name, icon, color),
+  categories(id, name, icon, color)
+`
+
 export function useTransactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(false)
@@ -53,7 +60,7 @@ export function useTransactions() {
     try {
       const { data, error } = await supabase
         .from('transactions')
-        .select('*')
+        .select(TRANSACTION_QUERY)
         .eq('status', 'success')
         .order('date', { ascending: false })
         .order('created_at', { ascending: false })
@@ -78,7 +85,6 @@ export function useTransactions() {
       } = await supabase.auth.getUser()
       if (!user) throw new Error('User not found')
 
-      // insert transaction
       const { data: newTx, error: txError } = await supabase
         .from('transactions')
         .insert({ ...form, user_id: user.id, status: 'success' })
@@ -88,7 +94,6 @@ export function useTransactions() {
       if (txError) throw txError
       if (newTx) setTransactions((prev) => [normalizeTransactions([newTx])[0], ...prev])
 
-      // refresh the page to update wallet balances (computed from transactions)
       router.refresh()
       return true
     } catch (err: unknown) {
@@ -115,5 +120,42 @@ export function useTransactions() {
     }
   }
 
-  return { transactions, loading, error, fetchTransactions, addTransaction, deleteTransaction }
+  const updateTransaction = async (id: string, form: TransactionForm) => {
+    setLoading(true)
+    setError('')
+    try {
+      const { data: updatedTx, error: txError } = await supabase
+        .from('transactions')
+        .update({ ...form })
+        .eq('id', id)
+        .select(TRANSACTION_QUERY)
+        .single()
+
+      if (txError) throw txError
+
+      if (updatedTx) {
+        setTransactions((prev) =>
+          prev.map((tx) => (tx.id === id ? normalizeTransactions([updatedTx])[0] : tx))
+        )
+      }
+
+      router.refresh()
+      return true
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong')
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return {
+    transactions,
+    loading,
+    error,
+    fetchTransactions,
+    addTransaction,
+    deleteTransaction,
+    updateTransaction,
+  }
 }

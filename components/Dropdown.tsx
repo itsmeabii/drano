@@ -52,11 +52,11 @@ export default function Dropdown({
         type="button"
         disabled={disabled}
         onClick={() => setOpen(!open)}
-        className={`bg-latte font-body flex w-full items-center justify-between rounded-[12px] border-[1.5px] px-4 py-3 text-left text-base transition-colors ${open ? 'border-lilac' : 'border-blush hover:border-lilac'} ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${selected ? 'text-plum' : 'text-lilac'}`}
+        className={`bg-latte font-body flex w-full items-center justify-between rounded-xl border-[1.5px] px-4 py-3 text-left text-base transition-colors ${open ? 'border-lilac' : 'border-blush hover:border-lilac'} ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${selected ? 'text-plum' : 'text-lilac'}`}
       >
         <span className="truncate">{selected ? selected.label : placeholder}</span>
         <span
-          className={`text-lilac ml-2 flex-shrink-0 text-sm transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`text-lilac ml-2 shrink-0 text-sm transition-transform ${open ? 'rotate-180' : ''}`}
         >
           ▾
         </span>
@@ -64,7 +64,7 @@ export default function Dropdown({
 
       {/* options list */}
       {open && (
-        <div className="border-blush absolute z-50 mt-1 w-full overflow-hidden rounded-[12px] border bg-white shadow-lg">
+        <div className="border-blush absolute z-50 mt-1 w-full overflow-hidden rounded-xl border bg-white shadow-lg">
           <div className="max-h-52 overflow-y-auto">
             {options.map((opt) => (
               <button

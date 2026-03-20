@@ -25,7 +25,7 @@ export default function ConfirmModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="bg-plum-900 absolute inset-0 opacity-40" onClick={onCancel} />
 
-      <div className="border-blush relative z-10 w-full max-w-sm rounded-[24px] border bg-white p-6">
+      <div className="border-blush relative z-10 w-full max-w-sm rounded-3xl border bg-white p-6">
         {/* icon */}
         <div className="bg-latte mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full">
           <span className="text-2xl">{danger ? '🗑️' : '⚠️'}</span>

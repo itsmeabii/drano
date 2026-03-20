@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { useTransactions } from '@/hooks/useTransactions'
+import { Transaction, useTransactions } from '@/hooks/useTransactions'
 import { useWallets } from '@/hooks/useWallets'
 import { useCategories } from '@/hooks/useCategories'
 import { DateRangeState } from '@/types/date'
@@ -13,11 +13,14 @@ import ConfirmModal from '@/components/ConfirmModal'
 import AddTransactionModal from '@/components/AddTransactionModal'
 import { FilterState } from '@/types/filter'
 import { Skeleton } from '@/components/Skeleton'
+import { Pencil } from 'lucide-react'
+import EditTransactionModal from '@/components/EditTransactionModal'
 
 export default function TransactionsPage() {
   const { transactions, deleteTransaction, fetchTransactions, loading } = useTransactions()
   const { wallets } = useWallets()
   const { categories } = useCategories()
+  const [editTransaction, setEditTransaction] = useState<Transaction | null>(null)
 
   const [showModal, setShowModal] = useState(false)
   const [filters, setFilters] = useState<FilterState>({
@@ -238,23 +241,30 @@ export default function TransactionsPage() {
                             tx.type === 'income'
                               ? 'text-income'
                               : tx.type === 'transfer'
-                                ? 'text-lilac'
+                                ? 'text-plum-600'
                                 : 'text-expense'
                           }`}
                         >
                           {tx.type === 'income' ? '+' : tx.type === 'transfer' ? '' : '-'}
                           {formatCurrency(tx.amount)}
                         </p>
-                        <p className="text-lilac text-xs capitalize">{tx.type}</p>
+                        <p className="text-lilac-500 text-xs capitalize">{tx.type}</p>
                       </div>
 
-                      {/* delete */}
-                      <button
-                        onClick={() => setConfirmDelete(tx.id)}
-                        className="text-blush hover:text-expense shrink-0 text-sm transition-colors"
-                      >
-                        ✕
-                      </button>
+                      <div className="flex shrink-0 items-center gap-2">
+                        <button
+                          onClick={() => setEditTransaction(tx)}
+                          className="text-lilac hover:text-plum transition-colors"
+                        >
+                          <Pencil size={14} />
+                        </button>
+                        <button
+                          onClick={() => setConfirmDelete(tx.id)}
+                          className="text-blush hover:text-expense text-sm transition-colors"
+                        >
+                          ✕
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -279,6 +289,14 @@ export default function TransactionsPage() {
 
       {showModal && (
         <AddTransactionModal onClose={() => setShowModal(false)} onSuccess={fetchTransactions} />
+      )}
+
+      {editTransaction && (
+        <EditTransactionModal
+          transaction={editTransaction}
+          onClose={() => setEditTransaction(null)}
+          onSuccess={fetchTransactions}
+        />
       )}
     </div>
   )

@@ -19,7 +19,6 @@ export const navItems = [
     links: [
       { label: 'Savings Goals', href: '/savings-goals', icon: '✦' },
       { label: 'Loans', href: '/loans', icon: '◈' },
-      { label: 'Borrowed', href: '/borrowed', icon: '◎' },
     ],
   },
 ]

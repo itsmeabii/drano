@@ -12,10 +12,14 @@ interface Props {
 
 export default function DatePicker({ value, onChange, label, required }: Props) {
   const [open, setOpen] = useState(false)
+  const [dropUp, setDropUp] = useState(false)
+  const [touched, setTouched] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const buttonRef = useRef<HTMLButtonElement>(null)
 
   const today = new Date()
   const selected = value ? new Date(value + 'T00:00:00') : null
+  const showError = required && touched && !value
 
   const [viewYear, setViewYear] = useState(selected?.getFullYear() ?? today.getFullYear())
   const [viewMonth, setViewMonth] = useState(selected?.getMonth() ?? today.getMonth())
@@ -29,6 +33,16 @@ export default function DatePicker({ value, onChange, label, required }: Props) 
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  const handleOpen = () => {
+    setTouched(true)
+    if (buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect()
+      const spaceBelow = window.innerHeight - rect.bottom
+      setDropUp(spaceBelow < 340)
+    }
+    setOpen(!open)
+  }
 
   const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate()
   const getFirstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay()
@@ -79,21 +93,44 @@ export default function DatePicker({ value, onChange, label, required }: Props) 
 
   return (
     <div ref={ref} className="relative flex-1">
-      {label && <label className="text-plum mb-1.5 block text-sm font-semibold">{label}</label>}
+      {label && (
+        <label className="text-plum mb-1.5 block text-sm font-semibold">
+          {label}
+          {required && <span className="text-expense ml-0.5">*</span>}
+        </label>
+      )}
 
       {/* trigger */}
       <button
+        ref={buttonRef}
         type="button"
-        onClick={() => setOpen(!open)}
-        className={`bg-latte font-body flex w-full items-center justify-between rounded-[12px] border-[1.5px] px-4 py-3 text-left text-base transition-colors ${open ? 'border-lilac' : 'border-blush hover:border-lilac'} ${value ? 'text-plum' : 'text-lilac'}`}
+        onClick={handleOpen}
+        className={`bg-latte font-body flex w-full items-center justify-between rounded-[12px] border-[1.5px] px-4 py-3 text-left text-base transition-colors ${open ? 'border-lilac' : showError ? 'border-expense' : 'border-blush hover:border-lilac'} ${value ? 'text-plum' : 'text-lilac'}`}
       >
         <span className="truncate">{value ? formatDisplay(value) : 'Select date'}</span>
-        <span className="text-lilac ml-2 flex-shrink-0 text-sm"></span>
       </button>
+
+      {/* hidden input for native form validation */}
+      {required && (
+        <input
+          type="text"
+          value={value}
+          onChange={() => {}}
+          required={required}
+          className="sr-only"
+          tabIndex={-1}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* error message */}
+      {showError && <p className="text-expense mt-1 text-xs">Please select a date</p>}
 
       {/* calendar */}
       {open && (
-        <div className="border-blush absolute z-50 mt-1 w-[280px] rounded-[18px] border bg-white p-4 shadow-lg">
+        <div
+          className={`border-blush absolute z-50 w-[280px] rounded-[18px] border bg-white p-4 shadow-lg ${dropUp ? 'bottom-full mb-1' : 'top-full mt-1'}`}
+        >
           {/* header */}
           <div className="mb-3 flex items-center justify-between">
             <button
@@ -126,12 +163,9 @@ export default function DatePicker({ value, onChange, label, required }: Props) 
 
           {/* days grid */}
           <div className="grid grid-cols-7 gap-y-1">
-            {/* empty cells */}
             {Array.from({ length: firstDay }).map((_, i) => (
               <div key={`empty-${i}`} />
             ))}
-
-            {/* day buttons */}
             {Array.from({ length: daysInMonth }).map((_, i) => {
               const day = i + 1
               return (

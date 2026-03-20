@@ -42,7 +42,7 @@ export default function DashboardPage() {
       />
 
       {data.error && (
-        <div className="border-blush text-expense mb-6 rounded-[12px] border bg-[#fdf0f5] px-4 py-3 text-sm">
+        <div className="border-blush text-expense mb-6 rounded-xl border bg-[#fdf0f5] px-4 py-3 text-sm">
           {data.error}
         </div>
       )}
@@ -95,7 +95,7 @@ export default function DashboardPage() {
             <div className="flex flex-col gap-3">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="flex items-center gap-3">
-                  <Skeleton className="h-10 w-10 flex-shrink-0 rounded-[10px]" />
+                  <Skeleton className="h-10 w-10 shrink-0 rounded-[10px]" />
                   <div className="flex flex-1 flex-col gap-2">
                     <Skeleton className="h-3.5 w-32 rounded-full" />
                     <Skeleton className="h-3 w-20 rounded-full" />
