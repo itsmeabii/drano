@@ -6,7 +6,7 @@ import { useWallets } from '@/hooks/useWallets'
 import { useCategories } from '@/hooks/useCategories'
 import { DateRangeState } from '@/types/date'
 import { formatDate, formatCurrency } from '@/utils/formatters'
-import { WALLET_TYPE_OPTIONS } from '@/constants/FilterOptions'
+import { TYPE_OPTIONS } from '@/constants/FilterOptions'
 import Dropdown from '@/components/Dropdown'
 import DateRangePicker from '@/components/DateRangePicker'
 import ConfirmModal from '@/components/ConfirmModal'
@@ -104,7 +104,7 @@ export default function TransactionsPage() {
               label="Type"
               value={filters.type}
               onChange={(v) => setFilters({ ...filters, type: v as FilterState['type'] })}
-              options={[{ value: 'all', label: 'All Types' }, ...WALLET_TYPE_OPTIONS]}
+              options={[{ value: 'all', label: 'All Types' }, ...TYPE_OPTIONS]}
             />
           </div>
 
@@ -144,105 +144,125 @@ export default function TransactionsPage() {
       </div>
 
       {/* transactions list */}
-      {loading ? (
-        <div className="border-blush overflow-hidden rounded-[18px] border bg-white">
-          {[...Array(5)].map((_, i) => (
-            <div
-              key={i}
-              className={`flex items-center gap-4 p-4 ${i !== 4 ? 'border-latte border-b' : ''}`}
-            >
-              <Skeleton className="h-11 w-11 shrink-0 rounded-xl" />
-              <div className="flex flex-1 flex-col gap-2">
-                <Skeleton className="h-4 w-32 rounded-full" />
-                <Skeleton className="h-3 w-20 rounded-full" />
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                <Skeleton className="h-4 w-20 rounded-full" />
-                <Skeleton className="h-3 w-12 rounded-full" />
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="flex flex-col gap-4">
-          {Object.entries(grouped).map(([date, txs]) => (
-            <div key={date}>
-              {/* date header */}
-              <div className="mb-3 flex items-center gap-3">
-                <p className="font-display text-plum text-base font-semibold">{formatDate(date)}</p>
-                <div className="bg-blush h-px flex-1" />
-                <p className="text-lilac text-sm">
-                  {txs.length} transaction{txs.length !== 1 ? 's' : ''}
-                </p>
-              </div>
-
-              {/* transactions */}
-              <div className="border-blush overflow-hidden rounded-[18px] border bg-white">
-                {txs.map((tx, i) => (
-                  <div
-                    key={tx.id}
-                    className={`flex items-center gap-4 p-4 ${i !== txs.length - 1 ? 'border-latte border-b' : ''}`}
-                  >
-                    {/* icon */}
-                    <div
-                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl"
-                      style={{ background: `${tx.wallets?.color ?? '#674188'}22` }}
-                    >
-                      {tx.categories?.icon ??
-                        (tx.type === 'income' ? '💰' : tx.type === 'transfer' ? '🔄' : '💸')}
-                    </div>
-
-                    {/* details */}
-                    <div className="min-w-0 flex-1">
-                      <p className="text-plum truncate text-sm font-semibold">
-                        {tx.name || tx.categories?.name || tx.type}
-                      </p>
-                      <div className="mt-0.5 flex flex-wrap items-center gap-2">
-                        {tx.categories && (
-                          <span className="text-lilac text-xs">{tx.categories.name}</span>
-                        )}
-                        {tx.categories && tx.wallets && (
-                          <span className="text-blush text-xs">·</span>
-                        )}
-                        {tx.wallets && (
-                          <span className="text-lilac text-xs">
-                            {tx.wallets.icon} {tx.wallets.name}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* amount */}
-                    <div className="shrink-0 text-right">
-                      <p
-                        className={`font-display text-base font-semibold ${
-                          tx.type === 'income'
-                            ? 'text-income'
-                            : tx.type === 'transfer'
-                              ? 'text-lilac'
-                              : 'text-expense'
-                        }`}
-                      >
-                        {tx.type === 'income' ? '+' : tx.type === 'transfer' ? '' : '-'}
-                        {formatCurrency(tx.amount)}
-                      </p>
-                      <p className="text-lilac text-xs capitalize">{tx.type}</p>
-                    </div>
-
-                    {/* delete */}
-                    <button
-                      onClick={() => setConfirmDelete(tx.id)}
-                      className="text-blush hover:text-expense shrink-0 text-sm transition-colors"
-                    >
-                      ✕
-                    </button>
+      {(() => {
+        if (loading) {
+          return (
+            <div className="border-blush overflow-hidden rounded-[18px] border bg-white">
+              {[...Array(5)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`flex items-center gap-4 p-4 ${i !== 4 ? 'border-latte border-b' : ''}`}
+                >
+                  <Skeleton className="h-11 w-11 shrink-0 rounded-xl" />
+                  <div className="flex flex-1 flex-col gap-2">
+                    <Skeleton className="h-4 w-32 rounded-full" />
+                    <Skeleton className="h-3 w-20 rounded-full" />
                   </div>
-                ))}
-              </div>
+                  <div className="flex flex-col items-end gap-2">
+                    <Skeleton className="h-4 w-20 rounded-full" />
+                    <Skeleton className="h-3 w-12 rounded-full" />
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      )}
+          )
+        }
+
+        if (filtered.length === 0) {
+          return (
+            <div className="border-blush flex flex-col items-center justify-center rounded-[18px] border bg-white py-16 text-center">
+              <p className="mb-3 text-4xl">💸</p>
+              <p className="text-plum text-base font-semibold">No transactions found</p>
+              <p className="text-lilac mt-1 text-sm">
+                Try adjusting your filters or add a new transaction
+              </p>
+            </div>
+          )
+        }
+
+        return (
+          <div className="flex flex-col gap-4">
+            {Object.entries(grouped).map(([date, txs]) => (
+              <div key={date}>
+                {/* date header */}
+                <div className="mb-3 flex items-center gap-3">
+                  <p className="font-display text-plum text-base font-semibold">
+                    {formatDate(date)}
+                  </p>
+                  <div className="bg-blush h-px flex-1" />
+                  <p className="text-lilac text-sm">
+                    {txs.length} transaction{txs.length !== 1 ? 's' : ''}
+                  </p>
+                </div>
+
+                {/* transactions */}
+                <div className="border-blush overflow-hidden rounded-[18px] border bg-white">
+                  {txs.map((tx, i) => (
+                    <div
+                      key={tx.id}
+                      className={`flex items-center gap-4 p-4 ${i !== txs.length - 1 ? 'border-latte border-b' : ''}`}
+                    >
+                      {/* icon */}
+                      <div
+                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-xl"
+                        style={{ background: `${tx.wallets?.color ?? '#674188'}22` }}
+                      >
+                        {tx.categories?.icon ??
+                          (tx.type === 'income' ? '💰' : tx.type === 'transfer' ? '🔄' : '💸')}
+                      </div>
+
+                      {/* details */}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-plum truncate text-sm font-semibold">
+                          {tx.name || tx.categories?.name || tx.type}
+                        </p>
+                        <div className="mt-0.5 flex flex-wrap items-center gap-2">
+                          {tx.categories && (
+                            <span className="text-lilac text-xs">{tx.categories.name}</span>
+                          )}
+                          {tx.categories && tx.wallets && (
+                            <span className="text-blush text-xs">·</span>
+                          )}
+                          {tx.wallets && (
+                            <span className="text-lilac text-xs">
+                              {tx.wallets.icon} {tx.wallets.name}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* amount */}
+                      <div className="shrink-0 text-right">
+                        <p
+                          className={`font-display text-base font-semibold ${
+                            tx.type === 'income'
+                              ? 'text-income'
+                              : tx.type === 'transfer'
+                                ? 'text-lilac'
+                                : 'text-expense'
+                          }`}
+                        >
+                          {tx.type === 'income' ? '+' : tx.type === 'transfer' ? '' : '-'}
+                          {formatCurrency(tx.amount)}
+                        </p>
+                        <p className="text-lilac text-xs capitalize">{tx.type}</p>
+                      </div>
+
+                      {/* delete */}
+                      <button
+                        onClick={() => setConfirmDelete(tx.id)}
+                        className="text-blush hover:text-expense shrink-0 text-sm transition-colors"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )
+      })()}
 
       {confirmDelete && (
         <ConfirmModal

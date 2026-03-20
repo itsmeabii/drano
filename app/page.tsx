@@ -1,6 +1,4 @@
-
 export default async function Home() {
-  
   return (
     <main>
       <h1>Drano 💸</h1>

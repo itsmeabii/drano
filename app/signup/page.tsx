@@ -18,68 +18,67 @@ export default function SignupPage() {
   if (loading) return <SplashScreen />
 
   return (
-    <div className="min-h-screen bg-latte flex items-center justify-center p-4 relative overflow-hidden">
-
+    <div className="bg-latte relative flex min-h-screen items-center justify-center overflow-hidden p-4">
       {/* blobs */}
-      <div className="fixed top-[-80px] right-[-80px] w-[300px] h-[300px] rounded-full bg-blush opacity-40 z-0" />
-      <div className="fixed bottom-[-60px] left-[-60px] w-[250px] h-[250px] rounded-full bg-lilac opacity-30 z-0" />
+      <div className="bg-blush fixed top-[-80px] right-[-80px] z-0 h-[300px] w-[300px] rounded-full opacity-40" />
+      <div className="bg-lilac fixed bottom-[-60px] left-[-60px] z-0 h-[250px] w-[250px] rounded-full opacity-30" />
 
-      <div className="bg-white border border-blush rounded-[24px] p-10 w-full max-w-[400px] relative z-10">
-
+      <div className="border-blush relative z-10 w-full max-w-[400px] rounded-[24px] border bg-white p-10">
         {/* logo */}
-        <div className="text-center mb-7">
-          <p className="font-display text-3xl font-semibold text-plum tracking-tight">✦ drano</p>
-          <p className="font-display italic text-xs text-lilac mt-1">drain the debt. manifest the wealth.</p>
+        <div className="mb-7 text-center">
+          <p className="font-display text-plum text-3xl font-semibold tracking-tight">✦ drano</p>
+          <p className="font-display text-lilac mt-1 text-xs italic">
+            drain the debt. manifest the wealth.
+          </p>
         </div>
 
-        <p className="font-display text-xl font-semibold text-plum mb-5">start your journey ✦</p>
+        <p className="font-display text-plum mb-5 text-xl font-semibold">start your journey ✦</p>
 
         <form onSubmit={handleSignup} className="flex flex-col gap-4">
-
           <div>
-            <label className="block text-xs font-semibold text-plum mb-1">email</label>
+            <label className="text-plum mb-1 block text-xs font-semibold">email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               required
-              className="w-full px-4 py-2.5 rounded-[12px] border-[1.5px] border-blush bg-latte text-sm text-plum font-body outline-none focus:border-lilac transition-colors"
+              className="border-blush bg-latte text-plum font-body focus:border-lilac w-full rounded-[12px] border-[1.5px] px-4 py-2.5 text-sm transition-colors outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-plum mb-1">password</label>
+            <label className="text-plum mb-1 block text-xs font-semibold">password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full px-4 py-2.5 rounded-[12px] border-[1.5px] border-blush bg-latte text-sm text-plum font-body outline-none focus:border-lilac transition-colors"
+              className="border-blush bg-latte text-plum font-body focus:border-lilac w-full rounded-[12px] border-[1.5px] px-4 py-2.5 text-sm transition-colors outline-none"
             />
           </div>
 
           {error && (
-            <div className="bg-[#fdf0f5] border border-blush rounded-[10px] px-4 py-2.5 text-xs text-expense">
+            <div className="border-blush text-expense rounded-[10px] border bg-[#fdf0f5] px-4 py-2.5 text-xs">
               {error}
             </div>
           )}
 
           <button
             type="submit"
-            className="w-full bg-plum text-latte rounded-full py-3 text-sm font-bold font-body hover:bg-plum-700 transition-colors"
+            className="bg-plum text-latte font-body hover:bg-plum-700 w-full rounded-full py-3 text-sm font-bold transition-colors"
           >
             create account ✦
           </button>
-
         </form>
 
-        <p className="text-center text-xs text-lilac mt-5">
+        <p className="text-lilac mt-5 text-center text-xs">
           already have an account?{' '}
-          <Link href="/login" className="text-plum font-bold">log in</Link>
+          <Link href="/login" className="text-plum font-bold">
+            log in
+          </Link>
         </p>
-
       </div>
     </div>
   )

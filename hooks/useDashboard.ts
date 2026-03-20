@@ -1,41 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { applyTransactionsToWallets } from '@/utils/walletMath'
-
-type ProfileRow = {
-  first_name: string | null
-  username: string | null
-}
-
-type DashboardWalletRow = {
-  id: string
-  name: string
-  type: string
-  balance: number | string | null
-  credit_limit?: number | string | null
-  credit_used?: number | string | null
-  interest_rate?: number | string | null
-  icon?: string | null
-  color?: string | null
-}
-
-type TxRecentRow = {
-  id: string
-  name: string
-  note: string | null
-  type: 'expense' | 'income' | 'transfer'
-  amount: number | string
-  date: string
-}
-
-type TxForBalancesRow = {
-  type: 'expense' | 'income' | 'transfer'
-  wallet_id: string
-  to_wallet_id: string | null
-  amount: number | string
-  transfer_fee: number | string | null
-  date: string
-}
+import {
+  DashboardWalletRow,
+  ProfileRow,
+  RawTxRow,
+  RawWalletRow,
+  TxForBalancesRow,
+  TxRecentRow,
+} from '@/types/dashboard'
 
 const n = (v: unknown) => {
   const num = typeof v === 'number' ? v : parseFloat(String(v ?? 0))
@@ -55,6 +28,28 @@ export function useDashboard() {
   const [totalBalance, setTotalBalance] = useState(0)
   const [spendableBalance, setSpendableBalance] = useState(0)
   const [savingsBalance, setSavingsBalance] = useState(0)
+
+  const normalizeWallets = (data: RawWalletRow[]): DashboardWalletRow[] =>
+    data.map((w) => ({
+      id: w.id,
+      name: w.name,
+      type: w.type,
+      balance: n(w.balance),
+      credit_used: n(w.credit_used),
+      credit_limit: n(w.credit_limit),
+      interest_rate: n(w.interest_rate),
+      icon: w.icon ?? '',
+      color: w.color ?? '#000000',
+    }))
+
+  const normalizeTx = (tx: RawTxRow): TxForBalancesRow => ({
+    type: tx.type,
+    wallet_id: tx.wallet_id,
+    to_wallet_id: tx.to_wallet_id ?? null,
+    amount: n(tx.amount),
+    transfer_fee: n(tx.transfer_fee),
+    date: tx.date,
+  })
 
   useEffect(() => {
     let cancelled = false
@@ -101,22 +96,22 @@ export function useDashboard() {
         if (monthTxRes.error) throw monthTxRes.error
         if (balancesTxRes.error) throw balancesTxRes.error
 
-        const profile = (profileRes.data ?? null) as ProfileRow | null
+        const profile = profileRes.data as ProfileRow | null
         const name = profile?.first_name ?? profile?.username ?? 'there'
 
-        const baseWallets = (walletsRes.data ?? []) as DashboardWalletRow[]
+        const normalizedWallets = normalizeWallets(walletsRes.data ?? [])
         const computedWallets = applyTransactionsToWallets<DashboardWalletRow>(
-          baseWallets,
-          (balancesTxRes.data ?? []) as TxForBalancesRow[]
+          normalizedWallets,
+          (balancesTxRes.data ?? []).map(normalizeTx)
         )
 
-        const total = computedWallets.reduce((sum, w) => sum + n(w.balance), 0)
+        const total = computedWallets.reduce((sum, w) => sum + w.balance, 0)
         const spendable = computedWallets
           .filter((w) => w.type !== 'savings' && w.type !== 'credit')
-          .reduce((sum, w) => sum + n(w.balance), 0)
+          .reduce((sum, w) => sum + w.balance, 0)
         const savings = computedWallets
           .filter((w) => w.type === 'savings')
-          .reduce((sum, w) => sum + n(w.balance), 0)
+          .reduce((sum, w) => sum + w.balance, 0)
 
         const monthTx = monthTxRes.data ?? []
         const inc = monthTx
@@ -130,7 +125,7 @@ export function useDashboard() {
 
         setDisplayName(name)
         setWallets(computedWallets)
-        setRecentTransactions((recentTxRes.data ?? []) as TxRecentRow[])
+        setRecentTransactions(recentTxRes.data ?? [])
         setIncome(inc)
         setExpenses(exp)
         setTotalBalance(total)

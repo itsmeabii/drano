@@ -10,7 +10,7 @@ export default function AddWalletButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="text-sm text-plum font-bold border border-blush rounded-full px-3 py-1.5 hover:bg-latte transition-colors"
+        className="text-plum border-blush hover:bg-latte rounded-full border px-3 py-1.5 text-sm font-bold transition-colors"
       >
         + Add
       </button>

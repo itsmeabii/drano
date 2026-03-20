@@ -10,13 +10,11 @@ export default function AddTransactionButton() {
     <>
       <button
         onClick={() => setShowModal(true)}
-        className="bg-plum text-latte text-sm font-bold px-5 py-2.5 rounded-full hover:bg-plum-700 transition-colors"
+        className="bg-plum text-latte hover:bg-plum-700 rounded-full px-5 py-2.5 text-sm font-bold transition-colors"
       >
         + Add Transaction
       </button>
-      {showModal && (
-        <AddTransactionModal onClose={() => setShowModal(false)} />
-      )}
+      {showModal && <AddTransactionModal onClose={() => setShowModal(false)} />}
     </>
   )
 }

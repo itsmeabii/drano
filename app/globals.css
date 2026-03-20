@@ -1,60 +1,60 @@
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;500;600;700&display=swap');
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @theme {
-  --color-plum-50:  #F5F0FA;
-  --color-plum-100: #E8DBF3;
-  --color-plum-200: #D4B8E8;
-  --color-plum-300: #B88FD6;
-  --color-plum-400: #9B65C4;
-  --color-plum-500: #7D4AA8;
+  --color-plum-50: #f5f0fa;
+  --color-plum-100: #e8dbf3;
+  --color-plum-200: #d4b8e8;
+  --color-plum-300: #b88fd6;
+  --color-plum-400: #9b65c4;
+  --color-plum-500: #7d4aa8;
   --color-plum-600: #674188;
   --color-plum-700: #523470;
-  --color-plum-800: #3D2655;
-  --color-plum-900: #28193A;
-  --color-plum:     #674188;
+  --color-plum-800: #3d2655;
+  --color-plum-900: #28193a;
+  --color-plum: #674188;
 
-  --color-lilac-50:  #F9F5FD;
-  --color-lilac-100: #F0E5F9;
-  --color-lilac-200: #E2CAF3;
-  --color-lilac-300: #D4AFED;
-  --color-lilac-400: #C8A1E0;
-  --color-lilac-500: #B580D2;
-  --color-lilac-600: #9A5EC0;
-  --color-lilac-700: #7A45A0;
-  --color-lilac-800: #5A3078;
-  --color-lilac-900: #3A1E50;
-  --color-lilac:     #C8A1E0;
+  --color-lilac-50: #f9f5fd;
+  --color-lilac-100: #f0e5f9;
+  --color-lilac-200: #e2caf3;
+  --color-lilac-300: #d4afed;
+  --color-lilac-400: #c8a1e0;
+  --color-lilac-500: #b580d2;
+  --color-lilac-600: #9a5ec0;
+  --color-lilac-700: #7a45a0;
+  --color-lilac-800: #5a3078;
+  --color-lilac-900: #3a1e50;
+  --color-lilac: #c8a1e0;
 
-  --color-blush-50:  #FCF7FA;
-  --color-blush-100: #F7EBF4;
-  --color-blush-200: #EED6E9;
-  --color-blush-300: #E2BFD9;
-  --color-blush-400: #D19DC5;
-  --color-blush-500: #BE7AAF;
-  --color-blush-600: #A85899;
-  --color-blush-700: #863F78;
-  --color-blush-800: #622D57;
-  --color-blush-900: #3E1C38;
-  --color-blush:     #E2BFD9;
+  --color-blush-50: #fcf7fa;
+  --color-blush-100: #f7ebf4;
+  --color-blush-200: #eed6e9;
+  --color-blush-300: #e2bfd9;
+  --color-blush-400: #d19dc5;
+  --color-blush-500: #be7aaf;
+  --color-blush-600: #a85899;
+  --color-blush-700: #863f78;
+  --color-blush-800: #622d57;
+  --color-blush-900: #3e1c38;
+  --color-blush: #e2bfd9;
 
-  --color-latte-50:  #FDFCFA;
-  --color-latte-100: #FAF6F0;
-  --color-latte-200: #F7EFE5;
-  --color-latte-300: #EFE0CE;
-  --color-latte-400: #E5CEB4;
-  --color-latte-500: #D9B894;
-  --color-latte-600: #C99E70;
-  --color-latte-700: #B07F49;
-  --color-latte-800: #8A6035;
-  --color-latte-900: #5C3F22;
-  --color-latte:     #F7EFE5;
+  --color-latte-50: #fdfcfa;
+  --color-latte-100: #faf6f0;
+  --color-latte-200: #f7efe5;
+  --color-latte-300: #efe0ce;
+  --color-latte-400: #e5ceb4;
+  --color-latte-500: #d9b894;
+  --color-latte-600: #c99e70;
+  --color-latte-700: #b07f49;
+  --color-latte-800: #8a6035;
+  --color-latte-900: #5c3f22;
+  --color-latte: #f7efe5;
 
-  --color-income:  #5a9a7a;
+  --color-income: #5a9a7a;
   --color-expense: #a85c82;
 
   --font-display: 'Playfair Display', serif;
-  --font-body:    'Nunito', sans-serif;
+  --font-body: 'Nunito', sans-serif;
 }
 
 body {

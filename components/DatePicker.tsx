@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { MONTHS, DAYS} from "@/constants/Calendar";
+import { MONTHS, DAYS } from '@/constants/Calendar'
 
 interface Props {
   value: string
@@ -41,13 +41,17 @@ export default function DatePicker({ value, onChange, label, required }: Props) 
   }
 
   const prevMonth = () => {
-    if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1) }
-    else setViewMonth(m => m - 1)
+    if (viewMonth === 0) {
+      setViewMonth(11)
+      setViewYear((y) => y - 1)
+    } else setViewMonth((m) => m - 1)
   }
 
   const nextMonth = () => {
-    if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1) }
-    else setViewMonth(m => m + 1)
+    if (viewMonth === 11) {
+      setViewMonth(0)
+      setViewYear((y) => y + 1)
+    } else setViewMonth((m) => m + 1)
   }
 
   const formatDisplay = (dateStr: string) => {
@@ -57,15 +61,17 @@ export default function DatePicker({ value, onChange, label, required }: Props) 
 
   const isSelected = (day: number) => {
     if (!selected) return false
-    return selected.getFullYear() === viewYear &&
+    return (
+      selected.getFullYear() === viewYear &&
       selected.getMonth() === viewMonth &&
       selected.getDate() === day
+    )
   }
 
   const isToday = (day: number) => {
-    return today.getFullYear() === viewYear &&
-      today.getMonth() === viewMonth &&
-      today.getDate() === day
+    return (
+      today.getFullYear() === viewYear && today.getMonth() === viewMonth && today.getDate() === day
+    )
   }
 
   const daysInMonth = getDaysInMonth(viewYear, viewMonth)
@@ -73,51 +79,46 @@ export default function DatePicker({ value, onChange, label, required }: Props) 
 
   return (
     <div ref={ref} className="relative flex-1">
-      {label && (
-        <label className="block text-sm font-semibold text-plum mb-1.5">{label}</label>
-      )}
+      {label && <label className="text-plum mb-1.5 block text-sm font-semibold">{label}</label>}
 
       {/* trigger */}
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className={`w-full px-4 py-3 rounded-[12px] border-[1.5px] bg-latte text-base text-left flex items-center justify-between transition-colors font-body
-          ${open ? 'border-lilac' : 'border-blush hover:border-lilac'}
-          ${value ? 'text-plum' : 'text-lilac'}`}
+        className={`bg-latte font-body flex w-full items-center justify-between rounded-[12px] border-[1.5px] px-4 py-3 text-left text-base transition-colors ${open ? 'border-lilac' : 'border-blush hover:border-lilac'} ${value ? 'text-plum' : 'text-lilac'}`}
       >
         <span className="truncate">{value ? formatDisplay(value) : 'Select date'}</span>
-        <span className="text-lilac text-sm ml-2 flex-shrink-0"></span>
+        <span className="text-lilac ml-2 flex-shrink-0 text-sm"></span>
       </button>
 
       {/* calendar */}
       {open && (
-        <div className="absolute z-50 mt-1 bg-white border border-blush rounded-[18px] shadow-lg p-4 w-[280px]">
-
+        <div className="border-blush absolute z-50 mt-1 w-[280px] rounded-[18px] border bg-white p-4 shadow-lg">
           {/* header */}
-          <div className="flex items-center justify-between mb-3">
+          <div className="mb-3 flex items-center justify-between">
             <button
               type="button"
               onClick={prevMonth}
-              className="w-8 h-8 rounded-full hover:bg-latte transition-colors text-plum font-bold flex items-center justify-center"
+              className="hover:bg-latte text-plum flex h-8 w-8 items-center justify-center rounded-full font-bold transition-colors"
             >
               ‹
             </button>
-            <p className="font-display text-sm font-semibold text-plum">
+            <p className="font-display text-plum text-sm font-semibold">
               {MONTHS[viewMonth]} {viewYear}
             </p>
             <button
               type="button"
               onClick={nextMonth}
-              className="w-8 h-8 rounded-full hover:bg-latte transition-colors text-plum font-bold flex items-center justify-center"
+              className="hover:bg-latte text-plum flex h-8 w-8 items-center justify-center rounded-full font-bold transition-colors"
             >
               ›
             </button>
           </div>
 
           {/* day labels */}
-          <div className="grid grid-cols-7 mb-1">
-            {DAYS.map(d => (
-              <div key={d} className="text-center text-[11px] font-semibold text-lilac py-1">
+          <div className="mb-1 grid grid-cols-7">
+            {DAYS.map((d) => (
+              <div key={d} className="text-lilac py-1 text-center text-[11px] font-semibold">
                 {d}
               </div>
             ))}
@@ -138,13 +139,13 @@ export default function DatePicker({ value, onChange, label, required }: Props) 
                   key={day}
                   type="button"
                   onClick={() => handleSelect(day)}
-                  className={`w-8 h-8 mx-auto rounded-full text-sm transition-all font-body
-                    ${isSelected(day)
+                  className={`font-body mx-auto h-8 w-8 rounded-full text-sm transition-all ${
+                    isSelected(day)
                       ? 'bg-plum text-latte font-semibold'
                       : isToday(day)
-                        ? 'border-[1.5px] border-plum text-plum font-semibold hover:bg-latte'
+                        ? 'border-plum text-plum hover:bg-latte border-[1.5px] font-semibold'
                         : 'text-plum hover:bg-latte'
-                    }`}
+                  }`}
                 >
                   {day}
                 </button>
@@ -156,13 +157,15 @@ export default function DatePicker({ value, onChange, label, required }: Props) 
           {value && (
             <button
               type="button"
-              onClick={() => { onChange(''); setOpen(false) }}
-              className="w-full mt-3 py-2 text-xs text-lilac hover:text-expense font-semibold transition-colors border-t border-blush pt-3"
+              onClick={() => {
+                onChange('')
+                setOpen(false)
+              }}
+              className="text-lilac hover:text-expense border-blush mt-3 w-full border-t py-2 pt-3 text-xs font-semibold transition-colors"
             >
               Clear date
             </button>
           )}
-
         </div>
       )}
     </div>

@@ -1,10 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { useWallets, WalletForm } from '@/hooks/useWallets'
-import { WALLET_TYPE_OPTIONS } from '@/constants/FilterOptions'
+import { useWallets } from '@/hooks/useWallets'
+import { WALLET_TYPE_OPTIONS } from '@/constants/Wallet'
 import { parseAmount } from '@/utils/formatters'
 import { WALLET_COLORS, WALLET_ICONS } from '@/constants/Wallet'
+import { WalletForm } from '@/types/wallet'
 
 interface Props {
   onClose: () => void

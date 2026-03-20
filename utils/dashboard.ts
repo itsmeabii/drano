@@ -1,4 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
+import { TxForBalancesRow } from '@/types/dashboard'
+import { NormalizedWallet } from '@/types/wallet'
 import { applyTransactionsToWallets } from '@/utils/walletMath'
 
 type DashboardWalletRow = {
@@ -13,19 +15,22 @@ type DashboardWalletRow = {
   color?: string | null
 }
 
-type TxForBalancesRow = {
-  type: 'expense' | 'income' | 'transfer'
-  wallet_id: string
-  to_wallet_id: string | null
-  amount: number | string
-  transfer_fee: number | string | null
-  date: string
-}
-
 const n = (v: unknown) => {
   const num = typeof v === 'number' ? v : parseFloat(String(v ?? 0))
   return Number.isFinite(num) ? num : 0
 }
+
+// ── Normalize wallets function ──
+const normalizeWallets = (wallets: DashboardWalletRow[]): NormalizedWallet[] =>
+  wallets.map((w) => ({
+    ...w,
+    balance: Number(w.balance ?? 0),
+    credit_limit: Number(w.credit_limit ?? 0),
+    credit_used: Number(w.credit_used ?? 0),
+    interest_rate: Number(w.interest_rate ?? 0),
+    icon: w.icon ?? '🏦', // default icon
+    color: w.color ?? '#999999', // default color
+  }))
 
 export async function getDashboardData() {
   const supabase = await createClient()
@@ -49,18 +54,19 @@ export async function getDashboardData() {
       .order('created_at', { ascending: false }),
   ])
 
-  const baseWallets = (walletsRes.data ?? []) as DashboardWalletRow[]
-  const computedWallets = applyTransactionsToWallets<DashboardWalletRow>(
+  // ── Normalize the wallets ──
+  const baseWallets = normalizeWallets(walletsRes.data ?? [])
+
+  // ── Compute balances using transactions ──
+  const computedWallets = applyTransactionsToWallets<NormalizedWallet>(
     baseWallets,
     (balancesTxRes.data ?? []) as TxForBalancesRow[]
   )
 
   const totalBalance = computedWallets.reduce((sum, w) => sum + n(w.balance), 0)
-
   const spendableBalance = computedWallets
     .filter((w) => w.type !== 'savings' && w.type !== 'credit')
     .reduce((sum, w) => sum + n(w.balance), 0)
-
   const savingsBalance = computedWallets
     .filter((w) => w.type === 'savings')
     .reduce((sum, w) => sum + n(w.balance), 0)

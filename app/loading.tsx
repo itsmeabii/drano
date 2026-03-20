@@ -1,39 +1,71 @@
 export default function Loading() {
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#F7EFE5',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      fontFamily: "'Nunito', sans-serif",
-      position: 'fixed',
-      inset: 0,
-      zIndex: 9999,
-    }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: '#F7EFE5',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontFamily: "'Nunito', sans-serif",
+        position: 'fixed',
+        inset: 0,
+        zIndex: 9999,
+      }}
+    >
       {/* decorative blobs */}
-      <div style={{ position: 'fixed', top: '-80px', left: '-80px', width: '300px', height: '300px', borderRadius: '50%', background: '#E2BFD9', opacity: 0.4 }} />
-      <div style={{ position: 'fixed', bottom: '-60px', right: '-60px', width: '250px', height: '250px', borderRadius: '50%', background: '#C8A1E0', opacity: 0.3 }} />
+      <div
+        style={{
+          position: 'fixed',
+          top: '-80px',
+          left: '-80px',
+          width: '300px',
+          height: '300px',
+          borderRadius: '50%',
+          background: '#E2BFD9',
+          opacity: 0.4,
+        }}
+      />
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '-60px',
+          right: '-60px',
+          width: '250px',
+          height: '250px',
+          borderRadius: '50%',
+          background: '#C8A1E0',
+          opacity: 0.3,
+        }}
+      />
 
       {/* logo */}
-      <div style={{
-        fontFamily: "'Playfair Display', serif",
-        fontSize: '42px',
-        fontWeight: 600,
-        color: '#674188',
-        letterSpacing: '-1px',
-        marginBottom: '8px',
-        animation: 'pulse 1.5s ease-in-out infinite',
-      }}>✦ drano</div>
+      <div
+        style={{
+          fontFamily: "'Playfair Display', serif",
+          fontSize: '42px',
+          fontWeight: 600,
+          color: '#674188',
+          letterSpacing: '-1px',
+          marginBottom: '8px',
+          animation: 'pulse 1.5s ease-in-out infinite',
+        }}
+      >
+        ✦ drano
+      </div>
 
-      <div style={{
-        fontFamily: "'Playfair Display', serif",
-        fontStyle: 'italic',
-        fontSize: '13px',
-        color: '#C8A1E0',
-        marginBottom: '40px',
-      }}>drain the debt. manifest the wealth.</div>
+      <div
+        style={{
+          fontFamily: "'Playfair Display', serif",
+          fontStyle: 'italic',
+          fontSize: '13px',
+          color: '#C8A1E0',
+          marginBottom: '40px',
+        }}
+      >
+        drain the debt. manifest the wealth.
+      </div>
 
       {/* animated stars */}
       <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -47,7 +79,9 @@ export default function Loading() {
               animationDelay: `${i * 0.15}s`,
               opacity: 0.3,
             }}
-          >★</div>
+          >
+            ★
+          </div>
         ))}
       </div>
 

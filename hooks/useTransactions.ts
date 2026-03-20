@@ -16,9 +16,9 @@ export interface Transaction {
   note: string | null
   date: string
   created_at: string
-  wallets: { id: string; name: string; icon: string; color: string } | null
-  to_wallet: { id: string; name: string; icon: string; color: string } | null
-  categories: { id: string; name: string; icon: string; color: string } | null
+  wallets?: { id: string; name: string; icon: string; color: string } | null
+  to_wallet?: { id: string; name: string; icon: string; color: string } | null
+  categories?: { id: string; name: string; icon: string; color: string } | null
 }
 
 export interface TransactionForm {
@@ -33,13 +33,6 @@ export interface TransactionForm {
   date: string
 }
 
-const TRANSACTION_QUERY = `
-  *,
-  wallets!transactions_wallet_id_fkey(id, name, icon, color),
-  to_wallet:wallets!transactions_to_wallet_id_fkey(id, name, icon, color),
-  categories(id, name, icon, color)
-`
-
 export function useTransactions() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(false)
@@ -50,55 +43,18 @@ export function useTransactions() {
   const normalizeTransactions = (data: Transaction[]) =>
     data.map((tx) => ({
       ...tx,
-      amount: parseFloat(String(tx.amount)),
-      transfer_fee: parseFloat(String(tx.transfer_fee ?? 0)),
+      amount: Number(tx.amount),
+      transfer_fee: Number(tx.transfer_fee ?? 0),
     }))
-
-  // ── Fetch transactions safely in effect ──
-  useEffect(() => {
-    let cancelled = false
-
-    const loadTransactions = async () => {
-      if (!cancelled) {
-        setLoading(true)
-        setError('')
-      }
-
-      try {
-        const { data, error } = await supabase
-          .from('transactions')
-          .select(TRANSACTION_QUERY)
-          .order('date', { ascending: false })
-          .order('created_at', { ascending: false })
-
-        if (!cancelled && data) {
-          setTransactions(normalizeTransactions(data))
-        }
-
-        if (error) {
-          console.error('fetchTransactions error:', error)
-          if (!cancelled) setError(error.message)
-        }
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    }
-
-    loadTransactions()
-
-    return () => {
-      cancelled = true
-    }
-  }, [supabase])
 
   const fetchTransactions = async () => {
     setLoading(true)
     setError('')
-
     try {
       const { data, error } = await supabase
         .from('transactions')
-        .select(TRANSACTION_QUERY)
+        .select('*')
+        .eq('status', 'success')
         .order('date', { ascending: false })
         .order('created_at', { ascending: false })
 
@@ -109,73 +65,55 @@ export function useTransactions() {
     }
   }
 
-  // ── Add a transaction ──
+  useEffect(() => {
+    fetchTransactions()
+  }, [])
+
   const addTransaction = async (form: TransactionForm) => {
     setLoading(true)
     setError('')
-
     try {
       const {
         data: { user },
       } = await supabase.auth.getUser()
       if (!user) throw new Error('User not found')
 
+      // insert transaction
       const { data: newTx, error: txError } = await supabase
         .from('transactions')
-        .insert({ ...form, user_id: user.id })
-        .select(TRANSACTION_QUERY)
+        .insert({ ...form, user_id: user.id, status: 'success' })
+        .select('*')
         .single()
 
       if (txError) throw txError
+      if (newTx) setTransactions((prev) => [normalizeTransactions([newTx])[0], ...prev])
 
-      if (newTx) {
-        setTransactions((prev) => [normalizeTransactions([newTx])[0], ...prev])
-      }
-
+      // refresh the page to update wallet balances (computed from transactions)
       router.refresh()
-      setLoading(false)
       return true
     } catch (err: unknown) {
-      console.error(err)
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('Something went wrong')
-      }
-      setLoading(false)
+      setError(err instanceof Error ? err.message : 'Something went wrong')
       return false
+    } finally {
+      setLoading(false)
     }
   }
 
   const deleteTransaction = async (id: string) => {
     setLoading(true)
     setError('')
-
     try {
       await supabase.from('transactions').delete().eq('id', id)
-
       setTransactions((prev) => prev.filter((tx) => tx.id !== id))
       router.refresh()
-      setLoading(false)
       return true
     } catch (err: unknown) {
-      console.error(err)
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError('Something went wrong')
-      }
-      setLoading(false)
+      setError(err instanceof Error ? err.message : 'Something went wrong')
       return false
+    } finally {
+      setLoading(false)
     }
   }
 
-  return {
-    transactions,
-    loading,
-    error,
-    fetchTransactions,
-    addTransaction,
-    deleteTransaction,
-  }
+  return { transactions, loading, error, fetchTransactions, addTransaction, deleteTransaction }
 }

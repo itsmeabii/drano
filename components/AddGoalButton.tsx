@@ -1,9 +1,7 @@
 export default function AddGoalButton() {
-    return (
-        <button
-            className="bg-plum text-latte text-sm font-bold px-5 py-2.5 rounded-full hover:bg-plum-700 transition-colors"
-        >
-            + Add Goal
-        </button>
-    )
+  return (
+    <button className="bg-plum text-latte hover:bg-plum-700 rounded-full px-5 py-2.5 text-sm font-bold transition-colors">
+      + Add Goal
+    </button>
+  )
 }

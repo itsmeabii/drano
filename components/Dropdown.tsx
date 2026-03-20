@@ -31,7 +31,7 @@ export default function Dropdown({
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  const selected = options.find(o => o.value === value)
+  const selected = options.find((o) => o.value === value)
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -45,29 +45,26 @@ export default function Dropdown({
 
   return (
     <div ref={ref} className={`relative ${className}`}>
-      {label && (
-        <label className="block text-sm font-semibold text-plum mb-1.5">{label}</label>
-      )}
+      {label && <label className="text-plum mb-1.5 block text-sm font-semibold">{label}</label>}
 
       {/* trigger */}
       <button
         type="button"
         disabled={disabled}
         onClick={() => setOpen(!open)}
-        className={`w-full px-4 py-3 rounded-[12px] border-[1.5px] bg-latte text-base text-left flex items-center justify-between transition-colors font-body
-          ${open ? 'border-lilac' : 'border-blush hover:border-lilac'}
-          ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-          ${selected ? 'text-plum' : 'text-lilac'}`}
+        className={`bg-latte font-body flex w-full items-center justify-between rounded-[12px] border-[1.5px] px-4 py-3 text-left text-base transition-colors ${open ? 'border-lilac' : 'border-blush hover:border-lilac'} ${disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} ${selected ? 'text-plum' : 'text-lilac'}`}
       >
         <span className="truncate">{selected ? selected.label : placeholder}</span>
-        <span className={`text-lilac text-sm transition-transform ml-2 flex-shrink-0 ${open ? 'rotate-180' : ''}`}>
+        <span
+          className={`text-lilac ml-2 flex-shrink-0 text-sm transition-transform ${open ? 'rotate-180' : ''}`}
+        >
           ▾
         </span>
       </button>
 
       {/* options list */}
       {open && (
-        <div className="absolute z-50 w-full mt-1 bg-white border border-blush rounded-[12px] shadow-lg overflow-hidden">
+        <div className="border-blush absolute z-50 mt-1 w-full overflow-hidden rounded-[12px] border bg-white shadow-lg">
           <div className="max-h-52 overflow-y-auto">
             {options.map((opt) => (
               <button
@@ -77,11 +74,11 @@ export default function Dropdown({
                   onChange(opt.value)
                   setOpen(false)
                 }}
-                className={`w-full px-4 py-2.5 text-sm text-left transition-colors font-body
-                  ${opt.value === value
+                className={`font-body w-full px-4 py-2.5 text-left text-sm transition-colors ${
+                  opt.value === value
                     ? 'bg-plum text-latte font-semibold'
                     : 'text-plum hover:bg-latte'
-                  }`}
+                }`}
               >
                 {opt.label}
               </button>

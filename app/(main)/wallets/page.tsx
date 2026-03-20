@@ -87,12 +87,6 @@ export default function WalletsPage() {
           <p className="mb-3 text-4xl">👛</p>
           <p className="text-plum font-semibold">No wallets yet</p>
           <p className="text-lilac mt-1 text-sm">Add your first wallet to start tracking</p>
-          <button
-            onClick={() => setShowModal(true)}
-            className="bg-plum text-latte hover:bg-plum-700 mt-4 rounded-full px-5 py-2.5 text-sm font-bold transition-colors"
-          >
-            + Add Wallet
-          </button>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">

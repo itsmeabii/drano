@@ -33,6 +33,7 @@ export default function AddTransactionModal({ onClose, onSuccess }: Props) {
   const { wallets } = useWallets()
   const { categories } = useCategories()
   const [showAddCategory, setShowAddCategory] = useState(false)
+  const [localError, setLocalError] = useState('')
   const filteredCategories = categories.filter((c: Category) => c.type === form.type)
   const toWallets = wallets.filter((w) => w.id !== form.wallet_id)
 
@@ -48,7 +49,18 @@ export default function AddTransactionModal({ onClose, onSuccess }: Props) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (form.type === 'transfer' && !form.to_wallet_id) return
+
+    // Validate required fields
+    if (!form.wallet_id) {
+      setLocalError('Please select a wallet')
+      return
+    }
+
+    if (form.type === 'transfer' && !form.to_wallet_id) {
+      setLocalError('Please select a destination wallet for transfers')
+      return
+    }
+
     const success = await addTransaction(form)
     if (success) {
       onSuccess?.()
@@ -264,9 +276,9 @@ export default function AddTransactionModal({ onClose, onSuccess }: Props) {
             />
           </div>
 
-          {error && (
+          {(error || localError) && (
             <div className="border-blush text-expense rounded-[10px] border bg-[#fdf0f5] px-4 py-3 text-sm">
-              {error}
+              {localError || error}
             </div>
           )}
 

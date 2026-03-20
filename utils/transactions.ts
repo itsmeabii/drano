@@ -5,11 +5,13 @@ export async function getTransactions() {
 
   const { data, error } = await supabase
     .from('transactions')
-    .select(`
+    .select(
+      `
       *,
       wallets(id, name, icon, color),
       categories(id, name, icon, color)
-    `)
+    `
+    )
     .order('date', { ascending: false })
     .order('created_at', { ascending: false })
 
