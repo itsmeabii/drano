@@ -5,6 +5,7 @@ import { useWallets } from '@/hooks/useWallets'
 import WalletCard from '@/components/WalletCard'
 import AddWalletModal from '@/components/AddWalletModal'
 import { formatCurrency } from '@/utils/formatters'
+import { Skeleton } from '@/components/Skeleton'
 
 export default function WalletsPage() {
   const [showModal, setShowModal] = useState(false)
@@ -61,10 +62,25 @@ export default function WalletsPage() {
 
       {/* wallets grid */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="mb-3 text-4xl">⏳</p>
-          <p className="text-plum font-semibold">Loading wallets…</p>
-          <p className="text-lilac mt-1 text-sm">Fetching your latest balances</p>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="border-blush flex flex-col gap-4 rounded-[20px] border bg-white p-5"
+            >
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-4 w-28 rounded-full" />
+                <Skeleton className="h-6 w-6 rounded-full" />
+              </div>
+
+              <Skeleton className="h-8 w-32 rounded-full" />
+
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-3 w-20 rounded-full" />
+                <Skeleton className="h-3 w-12 rounded-full" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : wallets.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">

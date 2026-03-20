@@ -12,6 +12,7 @@ import DateRangePicker from '@/components/DateRangePicker'
 import ConfirmModal from '@/components/ConfirmModal'
 import AddTransactionModal from '@/components/AddTransactionModal'
 import { FilterState } from '@/types/filter'
+import { Skeleton } from '@/components/Skeleton'
 
 export default function TransactionsPage() {
   const { transactions, deleteTransaction, fetchTransactions, loading } = useTransactions()
@@ -144,18 +145,23 @@ export default function TransactionsPage() {
 
       {/* transactions list */}
       {loading ? (
-        <div className="border-blush flex flex-col items-center justify-center rounded-[18px] border bg-white py-16 text-center">
-          <p className="mb-3 text-4xl">⏳</p>
-          <p className="text-plum text-base font-semibold">Loading transactions…</p>
-          <p className="text-lilac mt-1 text-sm">Fetching your latest activity</p>
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="border-blush flex flex-col items-center justify-center rounded-[18px] border bg-white py-16 text-center">
-          <p className="mb-3 text-4xl">💸</p>
-          <p className="text-plum text-base font-semibold">No transactions found</p>
-          <p className="text-lilac mt-1 text-sm">
-            Try adjusting your filters or add a new transaction
-          </p>
+        <div className="border-blush overflow-hidden rounded-[18px] border bg-white">
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className={`flex items-center gap-4 p-4 ${i !== 4 ? 'border-latte border-b' : ''}`}
+            >
+              <Skeleton className="h-11 w-11 shrink-0 rounded-xl" />
+              <div className="flex flex-1 flex-col gap-2">
+                <Skeleton className="h-4 w-32 rounded-full" />
+                <Skeleton className="h-3 w-20 rounded-full" />
+              </div>
+              <div className="flex flex-col items-end gap-2">
+                <Skeleton className="h-4 w-20 rounded-full" />
+                <Skeleton className="h-3 w-12 rounded-full" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <div className="flex flex-col gap-4">
